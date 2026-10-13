@@ -1,0 +1,4 @@
+import Link from 'next/link'
+import { PageHero } from '@/components/site/page-hero'
+import { getApplications } from '@/lib/data/content'
+export default async function ApplicationsPage(){const items=await getApplications();return <><PageHero eyebrow="Applications" title="Inspection tasks across precision manufacturing" intro="Application examples help identify a suitable gauging route; the final solution depends on the part and tolerance."/><main className="mx-auto grid max-w-[90rem] gap-5 px-5 py-14 sm:px-8 md:grid-cols-2 lg:grid-cols-3 lg:px-10">{items.map(x=><Link key={x.slug} href={`/applications/${x.slug}`} className="border border-rule p-6 hover:border-link"><h2 className="text-xl font-semibold text-navy">{x.name}</h2><p className="mt-3 text-sm leading-6 text-ink-muted">{x.summary}</p><span className="mt-5 inline-block font-semibold text-link">Explore application →</span></Link>)}</main></>}

@@ -1,0 +1,5 @@
+import Link from 'next/link'
+import {PageHero} from '@/components/site/page-hero'
+import {getNewsArticles} from '@/lib/data/content'
+export const revalidate=60
+export default async function NewsPage(){const articles=await getNewsArticles();return <><PageHero eyebrow="News & resources" title="Measurement notes and company updates"/><main className="mx-auto max-w-[90rem] px-5 py-14 sm:px-8 lg:px-10">{articles.length?<div className="grid gap-5 md:grid-cols-3">{articles.map(a=><article key={a.slug} className="flex h-full flex-col border border-rule p-6"><time className="font-mono text-xs text-ink-muted">{a.publishedAt}</time><h2 className="mt-3 text-xl font-semibold text-navy">{a.title}</h2><p className="mt-3 flex-1 text-sm leading-6 text-ink-muted">{a.excerpt}</p><Link href={`/news/${a.slug}`} className="mt-6 font-semibold text-link">Read article →</Link></article>)}</div>:<p className="border border-rule bg-steel p-8 text-ink-muted">No articles have been published yet. Please check back later.</p>}</main></>}

@@ -1,0 +1,10 @@
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { PageHero } from '@/components/site/page-hero'
+import { ProductStage } from '@/components/site/product-image'
+import { getProduct } from '@/lib/data/catalog'
+
+export const revalidate = 60
+export const dynamicParams = true
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const p=await getProduct(slug);return p?{title:p.name,description:p.summary,alternates:{canonical:`/products/${slug}`}}:{}}
+export default async function ProductPage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const p=await getProduct(slug);if(!p)notFound();return <><PageHero eyebrow="Product" title={p.name} intro={p.summary} crumbs={[{label:'Products',href:'/products'},{label:p.name}]}/><main className="mx-auto grid max-w-[90rem] gap-10 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:px-10"><ProductStage image={p.image} sizes="(min-width: 1024px) 50vw, 100vw" className="border border-rule"/><div><p className="leading-7 text-ink-muted">{p.description}</p><h2 className="mt-9 text-2xl font-semibold text-navy">Measurement tasks</h2><ul className="mt-4 space-y-2">{p.measurementTasks.map(x=><li key={x} className="border-l-2 border-link pl-4 text-sm text-ink-muted">{x}</li>)}</ul>{p.specs.length>0&&<><h2 className="mt-9 text-2xl font-semibold text-navy">Configuration notes</h2><dl className="mt-4 divide-y divide-rule border-y border-rule">{p.specs.map(s=><div key={s.label} className="grid grid-cols-2 gap-4 py-3 text-sm"><dt className="font-medium text-navy">{s.label}</dt><dd className="text-ink-muted">{s.value}</dd></div>)}</dl></>}</div></main></>}

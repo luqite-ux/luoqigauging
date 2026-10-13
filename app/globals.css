@@ -1,0 +1,304 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --navy: #0b2545;
+  --navy-800: #123a6b;
+  --navy-700: #1b4d8c;
+  --cyan: #2fb4e3;
+  --cyan-soft: #e3f4fb;
+  --link: #0a6aa3;
+  --ink: #0b1b33;
+  --ink-muted: #44546a;
+  --surface: #f3f6fa;
+  --surface-deep: #e8eef5;
+  --rule: #d3dbe6;
+  --rule-strong: #aab6c6;
+  --stage: #ffffff;
+
+  --background: #ffffff;
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: var(--navy);
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface);
+  --secondary-foreground: var(--navy);
+  --muted: var(--surface);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--surface-deep);
+  --accent-foreground: var(--navy);
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --border: var(--rule);
+  --input: var(--rule-strong);
+  --ring: var(--navy);
+  --radius: 0.25rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-plex-sans), 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+
+  --color-navy: var(--navy);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-cyan: var(--cyan);
+  --color-cyan-soft: var(--cyan-soft);
+  --color-link: var(--link);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-surface: var(--surface);
+  --color-surface-deep: var(--surface-deep);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-stage: var(--stage);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'tnum' 1, 'ss01' 1;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #ffffff;
+  }
+  ::selection {
+    background: var(--cyan);
+    color: var(--navy);
+  }
+}
+
+/* Calibration cues: used sparingly on eyebrows and page headers. */
+.tick-rule {
+  height: 7px;
+  background-image: linear-gradient(to right, var(--rule-strong) 1px, transparent 1px);
+  background-size: 8px 100%;
+  background-repeat: repeat-x;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.tick-rule-dark {
+  height: 7px;
+  background-image: linear-gradient(to right, rgb(255 255 255 / 0.45) 1px, transparent 1px);
+  background-size: 8px 100%;
+  background-repeat: repeat-x;
+  border-bottom: 1px solid rgb(255 255 255 / 0.45);
+}
+
+.grid-paper {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(to right, rgb(11 37 69 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(11 37 69 / 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Product stage: one continuous light surface, image always fully visible. */
+.product-stage {
+  background-color: var(--stage);
+}
+
+.product-stage img {
+  object-fit: contain;
+}
+
+/* ---- Motion -------------------------------------------------------------
+   Base content is always visible. Only elements that JavaScript has marked
+   data-reveal="pending" (because they start below the fold) are hidden, and
+   they are revealed by their own IntersectionObserver entry. */
+[data-reveal='pending'] {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+}
+
+[data-reveal='shown'] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 560ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--reveal-index, 0) * 70ms),
+    transform 560ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--reveal-index, 0) * 70ms);
+}
+
+[data-reveal-variant='clip'][data-reveal='pending'] {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal-variant='clip'][data-reveal='pending'] > * {
+  clip-path: inset(0 50% 0 50%);
+}
+
+[data-reveal-variant='clip'][data-reveal='shown'] > * {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 800ms cubic-bezier(0.65, 0, 0.35, 1) calc(var(--reveal-index, 0) * 70ms);
+}
+
+/* Process / calibration line */
+.process-line {
+  transform-origin: left center;
+}
+
+@media (max-width: 767px) {
+  .process-line {
+    transform-origin: center top;
+  }
+}
+
+[data-reveal='pending'] .process-line {
+  transform: scaleX(0);
+}
+
+@media (max-width: 767px) {
+  [data-reveal='pending'] .process-line {
+    transform: scaleY(0);
+  }
+}
+
+[data-reveal='shown'] .process-line {
+  transform: none;
+  transition: transform 720ms cubic-bezier(0.65, 0, 0.35, 1) calc(var(--reveal-index, 0) * 70ms + 140ms);
+}
+
+[data-reveal='shown'] .process-node {
+  animation: node-pulse 900ms ease-out calc(var(--reveal-index, 0) * 70ms + 160ms) 1 both;
+}
+
+@keyframes node-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(47 180 227 / 0.65);
+  }
+  100% {
+    box-shadow: 0 0 0 12px rgb(47 180 227 / 0);
+  }
+}
+
+/* Hero hierarchy */
+.hero-rise {
+  animation: hero-rise 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+
+.hero-marker {
+  transform-origin: left center;
+  animation: hero-marker 700ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation-delay: 80ms;
+}
+
+[data-active='false'] .hero-rise,
+[data-active='false'] .hero-marker {
+  animation: none;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-marker {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Card hover: 4px lift and image scale of at most 1.025. No layout shift. */
+.lift {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.lift-media {
+  transition: transform 320ms ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .lift:hover,
+  .lift:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px -18px rgb(11 37 69 / 0.45);
+    border-color: var(--navy);
+    position: relative;
+    z-index: 1;
+  }
+  .lift:hover .lift-media,
+  .lift:focus-visible .lift-media {
+    transform: scale(1.025);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal],
+  [data-reveal] > *,
+  [data-reveal] .process-line,
+  [data-reveal] .process-node,
+  .hero-rise,
+  .hero-marker,
+  .lift,
+  .lift-media {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  [data-slot='accordion-content'] {
+    animation: none !important;
+  }
+}
