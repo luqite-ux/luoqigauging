@@ -14,15 +14,21 @@ export function ProductStage({ image, sizes, priority, className }: ProductStage
   return (
     <div className={cn('product-stage relative aspect-square w-full overflow-hidden', className)}>
       <div className="lift-media absolute inset-0">
-        <Image
-          src={image.src}
-          alt={image.alt}
-          fill
-          sizes={sizes}
-          priority={priority}
-          className="object-contain"
-          style={{ transform: `scale(${image.stageScale})` }}
-        />
+        {image.src ? (
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            sizes={sizes}
+            priority={priority}
+            className="object-contain"
+            style={{ transform: `scale(${image.stageScale})` }}
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-steel px-6 text-center font-mono text-xs uppercase tracking-[0.18em] text-ink-muted" role="img" aria-label={`${image.alt}: image pending`}>
+            Image pending
+          </div>
+        )}
       </div>
     </div>
   )
