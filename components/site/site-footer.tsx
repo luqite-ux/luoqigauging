@@ -17,9 +17,6 @@ export async function SiteFooter() {
               China.
             </p>
             <p className="mt-5 text-sm font-medium text-white">{site.legalNameEn}</p>
-            <p lang="zh-CN" className="mt-1 text-sm text-white/70">
-              {site.legalNameZh}
-            </p>
           </div>
 
           <nav aria-label="Footer">
