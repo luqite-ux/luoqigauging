@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "guardVersion": "1",
+  "guardFiles": ["lib/service-status.ts"],
+  "integrationFiles": ["proxy.ts"],
+  "expiredPageFiles": ["app/service-expired/page.tsx"],
+  "dependencyFiles": [],
+  "publicRoutes": ["/", "/products", "/applications", "/capabilities", "/about", "/news", "/contact"],
+  "publicStatusPath": "/api/public/service-status/",
+  "failOpenScenarios": ["query_failed", "timeout", "missing_expiry", "enforcement_disabled", "guard_version_unregistered"],
+  "excludedPaths": ["/admin", "/admin/login", "/api", "/_next", "/favicon.ico", "static-assets"],
+  "defaults": { "serviceExpiryDate": null, "enforcementEnabled": false },
+  "identity": {
+    "taskId": "80980985-ad98-4a1d-94ff-42a4840a932e",
+    "customerTenantId": "011fb8f6-3682-41dc-bc93-be54f6ca610a",
+    "environmentId": "prj_wvYr0UysK7lsOMK3MjlVWT16J5Hq",
+    "deploymentSha": "7c64c9898838029d0440fb19bd1ed2cfe8696b64"
+  },
+  "backendRegistration": {
+    "registered": false,
+    "guardVersion": "1",
+    "evidencePath": "deliverables/service-guard-registration.json"
+  },
+  "productionVerification": {
+    "normal": { "result": "PENDING", "evidencePath": "deliverables/service-guard-normal.json" },
+    "simulatedExpired": { "result": "PENDING", "evidencePath": "deliverables/service-guard-simulated-expired.json" },
+    "renewalRecovery": { "result": "PENDING", "evidencePath": "deliverables/service-guard-renewal-recovery.json" },
+    "adminReachable": { "result": "PENDING", "evidencePath": "deliverables/service-guard-admin-reachable.json" }
+  },
+  "testResourceCleanup": {
+    "evidencePath": "deliverables/test-resource-cleanup.json",
+    "ledgerRoot": "D:\\Cursor\\Grand\\huanqiu-admin\\deliverables\\test-resource-runs"
+  }
+}
