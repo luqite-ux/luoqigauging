@@ -4,7 +4,7 @@ import { getSupabaseClient, getTenantId, localized } from '@/lib/supabase'
 export interface ProductImage { src: string; alt: string; stageScale: number }
 export interface ProductCategory { slug: string; order: number; name: string; summary: string; measures: string; chooseWhen: string; image: ProductImage }
 export interface ProductSpec { label: string; value: string }
-export interface Product { slug: string; categorySlug: string; name: string; summary: string; description: string; measurementTasks: string[]; applicationSlugs: string[]; specs: ProductSpec[]; image: ProductImage; featured: boolean }
+export interface Product { slug: string; categorySlug: string; name: string; summary: string; description: string; measurementTasks: string[]; applicationSlugs: string[]; specs: ProductSpec[]; image: ProductImage; featured: boolean; sku: string; moq: string }
 
 type JsonRecord = Record<string, unknown>
 
@@ -87,6 +87,8 @@ export async function getProducts(options: { categorySlug?: string; applicationS
       specs: row.specs && typeof row.specs === 'object' && !Array.isArray(row.specs) ? Object.entries(row.specs as JsonRecord).map(([label, value]) => ({ label, value: String(value) })) : [],
       image: productImage(row.image_url, name),
       featured: typeof extra.featured === 'boolean' ? extra.featured : index < 6,
+      sku: typeof extra.sku === 'string' ? extra.sku : '',
+      moq: typeof extra.moq === 'string' ? extra.moq : '',
     }
   })
   return applicationSlug ? products.filter((product) => product.applicationSlugs.includes(applicationSlug)) : products
