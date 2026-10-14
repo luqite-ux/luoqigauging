@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 
 const source = await readFile(new URL('../lib/data/catalog.ts', import.meta.url), 'utf8')
+const homePageSource = await readFile(new URL('../app/page.tsx', import.meta.url), 'utf8')
 
 test('catalog has no static sample fallback on formal product and category reads', () => {
   assert.doesNotMatch(source, /return\s+categoryRecords\b/)
@@ -13,4 +14,8 @@ test('related products are resolved from the backend catalog', () => {
   const relatedProductsBody = source.slice(source.indexOf('export async function getRelatedProducts'))
   assert.doesNotMatch(relatedProductsBody, /productRecords/)
   assert.match(relatedProductsBody, /await getProducts/)
+})
+
+test('homepage product placement revalidates backend content', () => {
+  assert.match(homePageSource, /export const revalidate\s*=\s*60/)
 })

@@ -6,6 +6,8 @@ import { SectionHeading } from '@/components/site/section-heading'
 import { getFeaturedProducts } from '@/lib/data/catalog'
 import { getApplications, getProcessSteps, getWorkshopPhotos } from '@/lib/data/content'
 
+export const revalidate = 60
+
 export default async function HomePage() {
   const [products, applications, steps, workshop] = await Promise.all([
     getFeaturedProducts(), getApplications(), getProcessSteps(), getWorkshopPhotos(),
