@@ -332,12 +332,56 @@ function pickText<T>(value: Localized<T>, locale: Locale): T {
   return value[locale] ?? value[defaultLocale]
 }
 
+type PublishedContent = {
+  title_i18n?: Localized<string>
+  body_i18n?: Localized<string>
+  items?: Array<{
+    id?: string
+    title_i18n?: Localized<string>
+    text_i18n?: Localized<string>
+    value?: string
+    is_active?: boolean
+  }>
+}
+
+async function getPublishedContent(keys: string[]): Promise<Map<string, PublishedContent>> {
+  const db = getSupabaseClient()
+  const tenantId = getTenantId()
+  if (!db || !tenantId || keys.length === 0) return new Map()
+
+  const { data, error } = await db
+    .from('content_entries')
+    .select('content_key,published_data')
+    .eq('tenant_id', tenantId)
+    .eq('status', 'published')
+    .in('content_key', keys)
+
+  if (error || !data) return new Map()
+  return new Map(data.map((row) => [row.content_key, row.published_data as PublishedContent]))
+}
+
+function activeItems(content?: PublishedContent) {
+  return (content?.items ?? []).filter((item) => item.is_active !== false)
+}
+
 export async function getApplications(locale: Locale = defaultLocale): Promise<Application[]> {
+  const published = await getPublishedContent(applicationRecords.map((record) => `application-${record.slug}`))
   return applicationRecords.map((record) => ({
     slug: record.slug,
     icon: record.icon,
     categorySlugs: record.categorySlugs,
-    ...pickText(record.content, locale),
+    ...(() => {
+      const fallback = pickText(record.content, locale)
+      const entry = published.get(`application-${record.slug}`)
+      const items = activeItems(entry)
+      return {
+        name: entry?.title_i18n ? pickText(entry.title_i18n, locale) : fallback.name,
+        summary: entry?.body_i18n ? pickText(entry.body_i18n, locale) : fallback.summary,
+        tasks: items.length
+          ? items.map((item) => item.title_i18n ? pickText(item.title_i18n, locale) : item.value ?? '').filter(Boolean)
+          : fallback.tasks,
+      }
+    })(),
   }))
 }
 
@@ -350,19 +394,46 @@ export async function getApplication(
 }
 
 export async function getProcessSteps(locale: Locale = defaultLocale): Promise<ProcessStep[]> {
-  return processRecords.map((record) => ({
-    key: record.key,
-    icon: record.icon,
-    ...pickText(record.content, locale),
-  }))
+  const published = await getPublishedContent(processRecords.map((record) => `process-${record.key}`))
+  return processRecords.map((record) => {
+    const fallback = pickText(record.content, locale)
+    const entry = published.get(`process-${record.key}`)
+    return {
+      key: record.key,
+      icon: record.icon,
+      title: entry?.title_i18n ? pickText(entry.title_i18n, locale) : fallback.title,
+      body: entry?.body_i18n ? pickText(entry.body_i18n, locale) : fallback.body,
+    }
+  })
 }
 
 export async function getFaqs(locale: Locale = defaultLocale): Promise<FaqItem[]> {
+  const published = await getPublishedContent(['faq-general'])
+  const items = activeItems(published.get('faq-general'))
+  if (items.length) {
+    return items.map((item) => ({
+      question: item.title_i18n ? pickText(item.title_i18n, locale) : '',
+      answer: item.text_i18n ? pickText(item.text_i18n, locale) : item.value ?? '',
+    })).filter((item) => item.question && item.answer)
+  }
   return faqRecords.map((record) => pickText(record.content, locale))
 }
 
 export async function getCapabilityGroups(locale: Locale = defaultLocale): Promise<CapabilityGroup[]> {
-  return capabilityRecords.map((record) => ({ slug: record.slug, ...pickText(record.content, locale) }))
+  const published = await getPublishedContent(capabilityRecords.map((record) => `capability-${record.slug}`))
+  return capabilityRecords.map((record) => {
+    const fallback = pickText(record.content, locale)
+    const entry = published.get(`capability-${record.slug}`)
+    const items = activeItems(entry)
+    return {
+      slug: record.slug,
+      title: entry?.title_i18n ? pickText(entry.title_i18n, locale) : fallback.title,
+      body: entry?.body_i18n ? pickText(entry.body_i18n, locale) : fallback.body,
+      points: items.length
+        ? items.map((item) => item.title_i18n ? pickText(item.title_i18n, locale) : item.value ?? '').filter(Boolean)
+        : fallback.points,
+    }
+  })
 }
 
 export async function getWorkshopPhotos(locale: Locale = defaultLocale): Promise<WorkshopPhoto[]> {
