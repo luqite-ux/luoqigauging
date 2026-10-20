@@ -33,8 +33,8 @@ export default async function CapabilitiesPage() {
             </Reveal>
 
             <div className="mt-12 space-y-6 lg:mt-16">
-              {groups.map((group, index) => {
-                const photo = photoByGroup.get(group.slug)
+              {groups.filter((group) => photoByGroup.has(group.slug)).map((group, index) => {
+                const photo = photoByGroup.get(group.slug)!
                 const reverse = index % 2 === 1
 
                 return (
@@ -44,29 +44,15 @@ export default async function CapabilitiesPage() {
                       className="grid overflow-hidden border border-rule bg-surface lg:min-h-[29rem] lg:grid-cols-2"
                     >
                       <div className={`relative min-h-72 overflow-hidden bg-surface-deep ${reverse ? 'lg:order-2' : ''}`}>
-                        {photo ? (
-                          <Image
-                            src={photo.src}
-                            alt={photo.alt}
-                            fill
-                            sizes="(min-width: 1024px) 50vw, 100vw"
-                            className="object-cover transition-transform duration-700 hover:scale-[1.025]"
-                          />
-                        ) : (
-                          <div
-                            data-capability-graphic={group.slug}
-                            className="grid-paper absolute inset-0 grid place-items-center text-navy"
-                            aria-hidden="true"
-                          >
-                            <div className="relative grid size-44 place-items-center rounded-full border border-navy/15 bg-white/70">
-                              <span className="absolute inset-5 rounded-full border border-dashed border-link/35" />
-                              <span className="absolute inset-10 rounded-full border border-navy/15" />
-                              <SiteIcon name="build" className="relative z-10 size-16 text-link" />
-                            </div>
-                          </div>
-                        )}
+                        <Image
+                          src={photo.src}
+                          alt={photo.alt}
+                          fill
+                          sizes="(min-width: 1024px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-700 hover:scale-[1.025]"
+                        />
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-navy/90 px-5 py-4 text-sm text-white">
-                          {photo?.caption ?? group.title}
+                          {photo.caption}
                         </div>
                       </div>
 
